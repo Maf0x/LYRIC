@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LYRIC</title>
+<meta name="theme-color" content="#F7F5F0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LYRIC">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="color-scheme" content="light dark">
+<!-- PWA completa: añade <link rel="manifest" href="manifest.webmanifest"> y <link rel="apple-touch-icon" href="icon-180.png"> cuando esos archivos existan. -->
+<style>
+:root{--bg:#F7F5F0;--sf:#EFEEE8;--tx:#24231F;--t2:#6B685F;--ac:#465B43;--on:#fff;--ln:#DCD9D0;--er:#8E2F2B;--ser:"Iowan Old Style",Charter,Palatino,Georgia,serif;--sans:-apple-system,"SF Pro Text",system-ui,sans-serif}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#1B1A17;--sf:#27251F;--tx:#ECE9E0;--t2:#A5A196;--ac:#8FAE8A;--on:#1B1A17;--ln:#39362F;--er:#E58F82}}
+:root[data-theme=dark]{--bg:#1B1A17;--sf:#27251F;--tx:#ECE9E0;--t2:#A5A196;--ac:#8FAE8A;--on:#1B1A17;--ln:#39362F;--er:#E58F82}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg);color:var(--tx);font:16px/1.4 var(--sans);-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-touch-callout:none;cursor:pointer;transition:opacity .12s}
+button:active{opacity:.55}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+#app{position:fixed;left:0;right:0;top:var(--vt,0px);height:var(--vh,100dvh);display:flex;flex-direction:column;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);overflow:hidden}
+#view{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.editing #view{overflow:hidden}.editing #nav{display:none}
+#nav{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--ln);background:var(--bg);padding-bottom:env(safe-area-inset-bottom)}
+#nav button{background:none;border:0;min-height:52px;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--t2)}
+#nav button[aria-current=page]{color:var(--ac);font-weight:600}
+#nav svg{width:22px;height:22px}
+.top{padding:calc(env(safe-area-inset-top) + 6px) 20px 6px}
+.bar{display:flex;align-items:center;min-height:44px;gap:0}.sp{flex:1}
+.brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--t2);font-weight:600}
+.ib{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;background:none;border:0;border-radius:8px;color:var(--tx);flex:none}
+.ib.pri{color:var(--ac)}.ib.on{color:var(--ac)}.ib.on svg{fill:currentColor}
+.ib[disabled]{opacity:.35}
+h1{font:600 28px/1.15 var(--ser);margin:2px 0 0;letter-spacing:-.01em}
+.sub{margin:2px 0 0;font-size:13px;color:var(--t2)}
+.sbar{display:flex;align-items:center;margin:6px 20px 0;background:var(--sf);border-radius:8px;padding-left:12px}
+.sbar[hidden]{display:none}
+.q{flex:1;min-width:0;border:0;background:none;height:44px;font-size:16px;outline:none;-webkit-appearance:none}
+.filters{display:flex;gap:8px;padding:8px 20px 0}
+.filters select{flex:1;min-width:0;height:36px;font-size:16px;background:var(--sf);border:0;border-radius:8px;padding:0 8px;color:var(--t2)}
+.list{padding-top:6px}
+.row{display:flex;align-items:center;border-bottom:1px solid var(--ln);padding-left:20px}
+.row .main{flex:1;min-width:0;text-align:left;background:none;border:0;padding:14px 0;display:block}
+.t{display:block;font:600 18px/1.25 var(--ser);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.p{display:block;color:var(--t2);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.m{display:flex;align-items:center;gap:8px;color:var(--t2);font-size:12px;margin-top:4px}
+.m svg{width:13px;height:13px;fill:currentColor;color:var(--ac)}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:10px;flex:none;vertical-align:-1px}
+.none,.hint{padding:20px;color:var(--t2);font-size:14px;margin:0}
+.empty{padding:18vh 28px 0;text-align:center}
+.ph{font:italic 22px/1.3 var(--ser);margin:0 0 22px}
+.pb{background:var(--ac);color:var(--on);border:0;border-radius:8px;min-height:44px;padding:0 20px;font-weight:600}
+.pb.dg{background:var(--er);color:#fff}
+.sec2{background:var(--sf);border:0;border-radius:8px;min-height:44px;padding:0 18px}
+.seg{display:flex;background:var(--sf);border-radius:8px;padding:2px;gap:2px}
+.seg button{flex:1;min-height:36px;border:0;background:none;border-radius:6px;font-size:14px;color:var(--t2)}
+.seg button[aria-pressed=true]{background:var(--bg);color:var(--tx);font-weight:600;box-shadow:0 0 0 1px var(--ln)}
+.set{padding:0 20px 24px}.set h2{font:600 12px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin:24px 0 8px}
+.set .line{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;border-bottom:1px solid var(--ln)}
+.set .line button.lk{background:none;border:0;min-height:44px;width:100%;text-align:left;color:var(--ac);padding:0}
+.set .line button.lk.dg{color:var(--er)}
+.set select{height:36px;font-size:16px;background:var(--sf);border:0;border-radius:8px;padding:0 8px}
+.set p{font-size:13px;color:var(--t2);margin:8px 0}
+/* editor */
+.ed{height:100%;display:flex;flex-direction:column}
+.eh{display:flex;align-items:center;padding:calc(env(safe-area-inset-top) + 2px) 8px 0 4px;border-bottom:1px solid var(--ln)}
+.ti{flex:1;min-width:0;border:0;background:none;font:600 20px/1.2 var(--ser);height:44px;outline:none;padding:0 4px;-webkit-appearance:none}
+#sv{font-size:11px;color:var(--t2);white-space:nowrap;padding:0 4px}#sv[data-s=err]{color:var(--er);font-weight:600}
+.tabs{padding:6px 16px}
+.edb{flex:1;min-height:0;display:flex;flex-direction:column}
+.pane{flex:1;min-height:0;display:flex;flex-direction:column}
+.pane>.seg{margin:0 16px 6px}
+.tb{display:flex;overflow-x:auto;border-bottom:1px solid var(--ln);padding:0 8px;scrollbar-width:none}
+.tb .ib{width:44px}
+.lyr,.st{display:block;width:100%;border:0;background:none;outline:none;resize:none;font-family:var(--ser);font-size:18px;line-height:1.65;padding:14px 20px calc(env(safe-area-inset-bottom) + 14px);-webkit-appearance:none}
+.lyr{flex:1;min-height:0}
+[data-size=s] .lyr,[data-size=s] .st{font-size:16px}[data-size=l] .lyr,[data-size=l] .st{font-size:21px}
+.scr{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.sec{border-bottom:1px solid var(--ln)}
+.sh{display:flex;align-items:center;padding:0 8px 0 20px}
+.sn{flex:1;min-width:0;border:0;background:none;font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ac);height:44px;outline:none}
+.sh .ib{width:40px}
+.st{padding-top:0;padding-bottom:12px;overflow:hidden}
+.add{display:block;width:calc(100% - 40px);margin:16px 20px calc(env(safe-area-inset-bottom) + 24px);min-height:44px;border:1px dashed var(--ln);background:none;border-radius:8px;color:var(--ac);font-weight:600}
+.nt{padding:8px 20px calc(env(safe-area-inset-bottom) + 24px)}
+.nt label{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--t2);margin:16px 0 6px}
+.nt textarea,.nt input,.nt select,.inp{width:100%;border:1px solid var(--ln);background:var(--sf);border-radius:8px;padding:10px 12px;font-size:16px;min-height:44px;outline:none}
+.nt textarea{min-height:150px;font-family:var(--ser);line-height:1.5;resize:vertical}
+.nt .sec2{margin-top:16px}
+/* sheets */
+.bg{position:absolute;inset:0;background:rgba(20,19,16,.45);display:flex;align-items:flex-end;z-index:5;animation:f .15s}
+.sheet{width:100%;max-height:85%;overflow-y:auto;background:var(--bg);border-radius:14px 14px 0 0;padding:16px 16px calc(env(safe-area-inset-bottom) + 12px);animation:u .18s ease-out}
+.sheet h2{font:600 18px var(--ser);margin:0 0 10px}.sheet p{margin:0 0 14px;color:var(--t2);font-size:14px;white-space:pre-wrap}
+.sheet pre{white-space:pre-wrap;font:16px/1.6 var(--ser);margin:0 0 14px;max-height:45vh;overflow:auto;background:var(--sf);padding:12px;border-radius:8px}
+.mi{display:flex;align-items:center;width:100%;min-height:48px;background:none;border:0;border-top:1px solid var(--ln);text-align:left;padding:0 4px;gap:10px;font-size:17px}
+.mi.dg{color:var(--er)}.mi[aria-checked=true]{font-weight:600;color:var(--ac)}
+.mi small{color:var(--t2);margin-left:auto;font-size:12px}
+.acts{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}.acts button{flex:1}
+.sw{display:flex;flex-wrap:wrap;gap:12px;margin:6px 0 10px}.sw button{width:44px;height:44px;border-radius:50%;border:2px solid transparent;box-shadow:inset 0 0 0 3px var(--bg)}
+.sw button[aria-pressed=true]{border-color:var(--tx)}
+#toast{position:absolute;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 64px);background:var(--tx);color:var(--bg);border-radius:8px;padding:10px 14px;display:flex;gap:12px;align-items:center;justify-content:space-between;font-size:14px;z-index:9}
+#toast[hidden]{display:none}#toast button{background:none;border:0;color:inherit;font-weight:700;text-decoration:underline;min-height:36px}
+.ban{margin:8px 20px 0;padding:10px 12px;border:1px solid var(--er);border-radius:8px;color:var(--er);font-size:13px}
+@keyframes f{from{opacity:0}}@keyframes u{from{transform:translateY(24px);opacity:.6}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app" data-size="m">
+<main id="view"></main>
+<nav id="nav" aria-label="Secciones"></nav>
+<div id="sheet"></div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+</div>
+<noscript>LYRIC necesita JavaScript.</noscript>
+<script>
+(()=>{'use strict';
+/* ===== A. Configuración ===== */
+const CFG={name:'LYRIC',version:'1.0.0',dbName:'lyric-db',prefsKey:'lyric-prefs'};
+const ST={draft:'Borrador',wip:'En progreso',done:'Terminada'};
+const PRESETS=['Intro','Verso 1','Preestribillo','Estribillo','Verso 2','Puente','Solo','Outro'];
+const COLORS=[['#465B43','Verde oliva'],['#8A5A44','Terracota'],['#4F6D7A','Azul pizarra'],['#8C7A3E','Ocre'],['#7A4F6D','Ciruela'],['#6B6B63','Gris']];
+const SORTS=[['modified','Modificación reciente'],['alpha','Alfabético'],['created','Fecha de creación'],['favs','Favoritas primero']];
+const $=s=>document.querySelector(s);
+const I={search:'<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',plus:'<path d="M12 5v14M5 12h14"/>',back:'<path d="M15 5l-7 7 7 7"/>',share:'<path d="M12 15V4M8 8l4-4 4 4M5 12v7h14v-7"/>',sort:'<path d="M4 7h16M7 12h10M10 17h4"/>',sliders:'<path d="M4 8h9M17 8h3M4 16h3M11 16h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/>',trash:'<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/>',star:'<path d="M12 4l2.4 5 5.4.7-4 3.8 1 5.4L12 16.3 7.2 18.9l1-5.4-4-3.8 5.4-.7z"/>',more:'<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',note:'<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>',folder:'<path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>',pencil:'<path d="M4 20l1-4L16 5l3 3L8 19zM14 7l3 3"/>',undo:'<path d="M9 6L4 11l5 5M4 11h10a5 5 0 010 10h-3"/>',redo:'<path d="M15 6l5 5-5 5M20 11H10a5 5 0 000 10h3"/>',copy:'<rect x="8" y="8" width="11" height="12" rx="2"/><path d="M5 16V6a2 2 0 012-2h8"/>',dup:'<rect x="4" y="4" width="12" height="12" rx="2"/><rect x="9" y="9" width="11" height="11" rx="2"/>',up:'<path d="M6 15l6-6 6 6"/>',down:'<path d="M6 9l6 6 6-6"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',nl:'<path d="M19 5v7H8M12 8l-4 4 4 4"/>',hash:'<path d="M9 4L7 20M17 4l-2 16M4 9h16M3 15h16"/>'};
+const ico=n=>{const d=document.createElement('span');d.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+I[n]+'</svg>';return d.firstChild};
+function h(t,a,...c){const e=document.createElement(t);for(const k in a||{}){const v=a[k];if(k==='class')e.className=v;else if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),v);else if(v!==false&&v!=null)e.setAttribute(k,v===true?'':v)}c.flat(Infinity).forEach(x=>x!=null&&x!==false&&e.append(x.nodeType?x:document.createTextNode(x)));return e}
+const btn=(label,icon,fn,cls='')=>h('button',{type:'button',class:'ib '+cls,'aria-label':label,title:label,onclick:fn},ico(icon));
+const seg=(opts,val,cb)=>h('div',{class:'seg',role:'group'},opts.map(([v,l])=>h('button',{type:'button','aria-pressed':String(v===val),onclick:()=>cb(v)},l)));
+const norm=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12));
+const fD=new Intl.DateTimeFormat('es',{day:'numeric',month:'short',year:'numeric'}),fT=new Intl.DateTimeFormat('es',{hour:'2-digit',minute:'2-digit'});
+const fmt=t=>{const d=new Date(t),n=new Date();return d.toDateString()===n.toDateString()?'Hoy '+fT.format(d):fD.format(d)};
+
+/* ===== K. Preferencias (localStorage) ===== */
+const P={theme:'auto',size:'m',mode:'free',sort:'modified'};
+try{Object.assign(P,JSON.parse(localStorage.getItem(CFG.prefsKey)||'{}'))}catch(e){}
+const savePrefs=()=>{try{localStorage.setItem(CFG.prefsKey,JSON.stringify(P))}catch(e){toast('No se pudieron guardar los ajustes.')}};
+function applyTheme(){const r=document.documentElement;P.theme==='auto'?r.removeAttribute('data-theme'):r.dataset.theme=P.theme;const dk=P.theme==='dark'||(P.theme==='auto'&&matchMedia('(prefers-color-scheme:dark)').matches);$('meta[name=theme-color]').content=dk?'#1B1A17':'#F7F5F0';$('#app').dataset.size=P.size}
+matchMedia('(prefers-color-scheme:dark)').addEventListener?.('change',applyTheme);
+
+/* ===== B. Almacenamiento ===== */
+let db=null,persisted=null,chain=Promise.resolve(),inflight=0,failed=false;
+const openDB=()=>new Promise((res,rej)=>{try{const r=indexedDB.open(CFG.dbName,1);r.onupgradeneeded=()=>['songs','folders','history'].forEach(n=>r.result.createObjectStore(n,{keyPath:'id'}));r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}});
+const dbAll=s=>new Promise((res,rej)=>{const q=db.transaction(s).objectStore(s).getAll();q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
+const dbGet=(s,id)=>new Promise((res,rej)=>{const q=db.transaction(s).objectStore(s).get(id);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
+const dbW=(s,fn)=>new Promise((res,rej)=>{const t=db.transaction(s,'readwrite');fn(t.objectStore(s));t.oncomplete=res;t.onerror=t.onabort=()=>rej(t.error)});
+function showStatus(){const e=$('#sv');if(!e)return;e.textContent=failed?'No se pudo guardar':(inflight||pend.size)?'Guardando…':'Guardado';e.dataset.s=failed?'err':''}
+function op(fn){inflight++;showStatus();chain=chain.then(()=>{if(!db)throw 0;return fn()}).then(()=>{failed=false},()=>{if(!failed)toast('No se pudo guardar. Exporta una copia de seguridad desde Ajustes.');failed=true}).then(()=>{inflight--;showStatus()});return chain}
+const persist=(st,v)=>{const c=JSON.parse(JSON.stringify(v));return op(()=>dbW(st,o=>o.put(c)))};
+const remove=(st,id)=>op(()=>dbW(st,o=>o.delete(id)));
+
+/* ===== C. Modelo ===== */
+const S={songs:[],folders:[],tab:'songs',fv:undefined,sub:null,q:'',tag:'',status:'',open:null,ed:'lyrics',sOpen:false,st:0};
+const pend=new Map(),H={};
+const live=()=>S.songs.filter(s=>!s.deletedAt);
+const byId=id=>S.songs.find(s=>s.id===id);
+const fname=id=>(S.folders.find(f=>f.id===id)||{}).name||'';
+const textOf=s=>s.mode==='sections'?s.sections.map(x=>'['+x.name+']\n'+x.text).join('\n\n'):s.lyrics;
+function newSong(fid){const t=Date.now();return{id:uid(),title:'Sin título',lyrics:'',sections:[],mode:P.mode,createdAt:t,updatedAt:t,isFavorite:false,status:'draft',folderId:fid||null,notes:'',tags:[],deletedAt:null}}
+const str=(v,n=1e6)=>typeof v==='string'?v.slice(0,n):'';
+const num=v=>Number.isFinite(v)?v:0;
+function cleanSong(o){if(!o||typeof o!=='object'||typeof o.id!=='string'||!o.id||o.id.length>100)return null;const t=Date.now();return{id:o.id,title:str(o.title,300)||'Sin título',lyrics:str(o.lyrics),sections:Array.isArray(o.sections)?o.sections.filter(x=>x&&typeof x==='object').map(x=>({id:str(x.id,100)||uid(),name:str(x.name,100),text:str(x.text)})):[],mode:o.mode==='sections'?'sections':'free',createdAt:num(o.createdAt)||t,updatedAt:num(o.updatedAt)||t,isFavorite:o.isFavorite===true,status:ST[o.status]?o.status:'draft',folderId:typeof o.folderId==='string'?o.folderId:null,notes:str(o.notes),tags:Array.isArray(o.tags)?o.tags.filter(x=>typeof x==='string'&&x.trim()).map(x=>x.trim().slice(0,40)).slice(0,30):[],deletedAt:num(o.deletedAt)||null}}
+function cleanFolder(o){if(!o||typeof o!=='object'||typeof o.id!=='string'||!o.id||typeof o.name!=='string')return null;return{id:o.id,name:o.name.slice(0,100)||'Carpeta',color:COLORS.some(c=>c[0]===o.color)?o.color:null,createdAt:num(o.createdAt)||Date.now()}}
+
+/* guardado con demora; el orden lo garantiza la cola */
+function save(s,touch=true){if(touch)s.updatedAt=Date.now();clearTimeout(pend.get(s.id));pend.set(s.id,setTimeout(()=>flush(s.id),500));showStatus()}
+function flush(id){if(!pend.has(id))return;clearTimeout(pend.get(id));pend.delete(id);const s=byId(id);if(s){persist('songs',s);snap(s)}}
+const saveNow=(s,t=true)=>{save(s,t);flush(s.id)};
+const flushAll=()=>[...pend.keys()].forEach(flush);
+addEventListener('pagehide',flushAll);document.addEventListener('visibilitychange',()=>{if(document.hidden)flushAll()});
+
+/* ===== J. Historial ===== */
+async function hist(id){if(!H[id]){try{H[id]=(await dbGet('history',id))||{id,versions:[]}}catch(e){H[id]={id,versions:[]}}}return H[id]}
+async function snap(s,force){if(!db)return;const t=textOf(s);if(!t.trim())return;const r=await hist(s.id),l=r.versions[0];if(l&&l.text===t)return;if(!force&&l&&Date.now()-l.t<12e4)return;r.versions.unshift({t:Date.now(),text:t});r.versions.length=Math.min(r.versions.length,25);persist('history',r)}
+
+/* ===== N. Utilidades de UI: toast, hojas, diálogos ===== */
+let tt;function toast(m,al,fn){const t=$('#toast');t.replaceChildren(h('span',{},m),al?h('button',{type:'button',onclick:()=>{t.hidden=true;fn()}},al):null);t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,al?7000:3500)}
+let lastF=null;
+function openSheet(content,label,focusEl){lastF=document.activeElement;const bg=h('div',{class:'bg',onclick:e=>{if(e.target===bg)closeSheet()}},h('div',{class:'sheet',role:'dialog','aria-modal':'true','aria-label':label},content));$('#sheet').replaceChildren(bg);(focusEl||bg.querySelector('button,input'))?.focus()}
+function closeSheet(){$('#sheet').replaceChildren();if(lastF&&lastF.tagName==='BUTTON'&&document.contains(lastF))lastF.focus()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#sheet').firstChild)closeSheet()});
+function menu(items,label){openSheet([label?h('h2',{},label):null,items.filter(Boolean).map(i=>h('button',{type:'button',class:'mi'+(i.danger?' dg':''),role:i.check!=null?'menuitemradio':null,'aria-checked':i.check!=null?String(i.check):null,onclick:()=>{closeSheet();i.fn()}},i.l,i.s?h('small',{},i.s):null)),h('button',{type:'button',class:'mi',onclick:closeSheet},'Cerrar')],label||'Menú')}
+function ask(title,val,ok,cb,ph){const i=h('input',{type:'text',class:'inp','aria-label':title,placeholder:ph||'',autocomplete:'off',enterkeyhint:'done'});i.value=val||'';openSheet(h('form',{onsubmit:e=>{e.preventDefault();const v=i.value.trim();if(!v)return;closeSheet();cb(v)}},h('h2',{},title),i,h('div',{class:'acts'},h('button',{type:'button',class:'sec2',onclick:closeSheet},'Cancelar'),h('button',{type:'submit',class:'pb'},ok))),title,i);i.select()}
+function confirmD(title,msg,ok,cb,danger){openSheet(h('div',{},h('h2',{},title),h('p',{},msg),h('div',{class:'acts'},h('button',{type:'button',class:'sec2',onclick:closeSheet},'Cancelar'),h('button',{type:'button',class:'pb'+(danger?' dg':''),onclick:()=>{closeSheet();cb()}},ok))),title)}
+
+/* ===== I. Exportar / compartir ===== */
+function buildText(s,notes){let t=s.title+'\n\n'+textOf(s);if(notes&&s.notes.trim())t+='\n\n---\nNotas\n'+s.notes;return t}
+function dl(name,text,type){const u=URL.createObjectURL(new Blob([text],{type}));const a=h('a',{href:u,download:name});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000)}
+const slug=t=>norm(t).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'cancion';
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){const x=h('textarea');x.value=t;x.style.cssText='position:fixed;opacity:0';document.body.append(x);x.select();x.setSelectionRange(0,t.length);let ok=false;try{ok=document.execCommand('copy')}catch(_){}x.remove();return ok}}
+async function shareSong(s,notes){const t=buildText(s,notes);if(navigator.share){try{await navigator.share({title:s.title,text:t});return}catch(e){if(e&&e.name==='AbortError')return}}(await copyText(t))?toast('Letra copiada al portapapeles.'):toast('No se pudo compartir ni copiar. Usa «Descargar .txt».')}
+function exportAll(){const d={app:CFG.name,format:1,exportedAt:new Date().toISOString(),songs:S.songs,folders:S.folders};dl('lyric-copia-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(d,null,1),'application/json');toast('Copia preparada: revisa la descarga o la hoja de compartir de Safari.')}
+function importFile(){const f=h('input',{type:'file',accept:'.json,application/json'});f.onchange=async()=>{const file=f.files[0];if(!file)return;let d;try{const tx=await file.text();if(!tx.trim())throw 0;d=JSON.parse(tx)}catch(e){return toast('El archivo está vacío o no es un JSON válido. No se ha cambiado nada.')}
+if(!d||typeof d!=='object'||!Array.isArray(d.songs))return toast('El archivo no tiene el formato de una copia de LYRIC. No se ha cambiado nada.');
+const sg=d.songs.map(cleanSong).filter(Boolean),fo=(Array.isArray(d.folders)?d.folders:[]).map(cleanFolder).filter(Boolean),bad=d.songs.length-sg.length+(Array.isArray(d.folders)?d.folders.length:0)-fo.length;
+if(!sg.length&&!fo.length)return toast('El archivo no contiene registros válidos. No se ha cambiado nada.');
+confirmD('¿Importar copia?',`Contiene ${sg.length} canciones y ${fo.length} carpetas válidas${bad?` (${bad} registros dañados se omitirán)`:''}. Se añadirán a tu biblioteca; si algún identificador ya existe, se creará una copia y no se sobrescribirá nada.`,'Importar',async()=>{
+const ids=new Set(S.songs.map(x=>x.id)),fids=new Set(S.folders.map(x=>x.id)),fm={};let dup=0;
+fo.forEach(x=>{const o=x.id;if(fids.has(o)){x.id=uid();dup++}fm[o]=x.id;fids.add(x.id);S.folders.push(x);persist('folders',x)});
+sg.forEach(x=>{if(ids.has(x.id)){x.id=uid();dup++}ids.add(x.id);x.folderId=x.folderId&&fm[x.folderId]?fm[x.folderId]:null;S.songs.push(x);persist('songs',x)});
+await chain;render();failed?0:toast(`Importadas ${sg.length} canciones y ${fo.length} carpetas${dup?`; ${dup} con identificador repetido se guardaron como copias`:''}${bad?`; ${bad} omitidos`:''}.`)});};f.click()}
+
+/* ===== D/E. Acciones sobre canciones ===== */
+function createSong(fid){const s=newSong(fid);S.songs.push(s);saveNow(s);openSong(s.id,true)}
+function dupSong(s){const c=JSON.parse(JSON.stringify(s));c.id=uid();c.title=s.title+' (copia)';c.createdAt=c.updatedAt=Date.now();c.sections.forEach(x=>x.id=uid());S.songs.push(c);saveNow(c,false);render();toast('Copia creada.','Abrir',()=>openSong(c.id))}
+function delSong(s){confirmD('¿Eliminar esta canción?',`«${s.title}» irá a la papelera (Ajustes) y podrás recuperarla.`,'Eliminar',()=>{s.deletedAt=Date.now();saveNow(s,false);if(S.open){S.open=null;history.back()}render();toast('Canción eliminada.','Deshacer',()=>{s.deletedAt=null;saveNow(s,false);render()})},true)}
+function moveMenu(s){menu([{l:'Sin carpeta',check:!s.folderId,fn:()=>{s.folderId=null;saveNow(s,false);render()}},...S.folders.map(f=>({l:f.name,check:s.folderId===f.id,fn:()=>{s.folderId=f.id;saveNow(s,false);render()}})),{l:'Nueva carpeta…',fn:()=>newFolder(f=>{s.folderId=f.id;saveNow(s,false);render()})}],'Mover a carpeta')}
+function statusMenu(s){menu(Object.keys(ST).map(k=>({l:ST[k],check:s.status===k,fn:()=>{s.status=k;saveNow(s,false);render()}})),'Estado')}
+function songMenu(s){menu([{l:'Renombrar',fn:()=>S.open===s.id?($('.ti')?.focus(),$('.ti')?.select()):ask('Renombrar canción',s.title,'Guardar',v=>{s.title=v;saveNow(s);render()})},{l:'Duplicar',fn:()=>dupSong(s)},{l:s.isFavorite?'Quitar de favoritas':'Marcar como favorita',fn:()=>{s.isFavorite=!s.isFavorite;saveNow(s,false);render()}},{l:'Mover a carpeta',s:fname(s.folderId),fn:()=>moveMenu(s)},{l:'Cambiar estado',s:ST[s.status],fn:()=>statusMenu(s)},{l:'Copiar letra',fn:async()=>toast(await copyText(textOf(s))?'Letra copiada.':'No se pudo copiar.')},{l:'Compartir letra',fn:()=>shareSong(s,false)},{l:'Compartir con notas',fn:()=>shareSong(s,true)},{l:'Descargar .txt',fn:()=>{dl(slug(s.title)+'.txt',buildText(s,false),'text/plain');toast('Descarga iniciada.')}},{l:'Historial de versiones',fn:()=>history_(s)},{l:'Eliminar',danger:true,fn:()=>delSong(s)}],s.title)}
+async function history_(s){flushAll();const r=await hist(s.id);if(!r.versions.length)return openSheet(h('div',{},h('h2',{},'Historial'),h('p',{},'Todavía no hay versiones guardadas de esta canción. Se crean solas mientras escribes.'),h('button',{type:'button',class:'sec2',onclick:closeSheet},'Cerrar')),'Historial');
+menu(r.versions.map(v=>({l:fmt(v.t),s:v.text.replace(/\s+/g,' ').slice(0,28),fn:()=>openSheet(h('div',{},h('h2',{},fmt(v.t)),h('pre',{},v.text),h('div',{class:'acts'},h('button',{type:'button',class:'sec2',onclick:closeSheet},'Cerrar'),h('button',{type:'button',class:'pb',onclick:()=>{closeSheet();confirmD('¿Restaurar esta versión?','Se reemplazará la letra actual (se guarda antes en el historial) y la canción pasará a texto libre.','Restaurar',()=>{snap(s,true);s.mode='free';s.lyrics=v.text;saveNow(s);render();toast('Versión restaurada.')})}},'Restaurar'))),'Versión')})),'Historial')}
+
+/* ===== G. Carpetas ===== */
+function newFolder(cb){ask('Nueva carpeta','','Crear',v=>{const f={id:uid(),name:v,color:null,createdAt:Date.now()};S.folders.push(f);persist('folders',f);cb?cb(f):render()},'Nombre de la carpeta')}
+function folderMenu(f){menu([{l:'Renombrar',fn:()=>ask('Renombrar carpeta',f.name,'Guardar',v=>{f.name=v;persist('folders',f);render()})},{l:'Cambiar color',fn:()=>openSheet(h('div',{},h('h2',{},'Color de la carpeta'),h('div',{class:'sw'},COLORS.map(([c,n])=>h('button',{type:'button','aria-label':n,'aria-pressed':String(f.color===c),style:'background:'+c,onclick:()=>{f.color=c;persist('folders',f);closeSheet();render()}}))),h('button',{type:'button',class:'mi',onclick:()=>{f.color=null;persist('folders',f);closeSheet();render()}},'Sin color'),h('button',{type:'button',class:'mi',onclick:closeSheet},'Cerrar')),'Color')},{l:'Eliminar carpeta…',danger:true,fn:()=>delFolder(f)}],f.name)}
+function delFolder(f){const n=live().filter(s=>s.folderId===f.id);const rm=()=>{S.folders=S.folders.filter(x=>x.id!==f.id);remove('folders',f.id);S.songs.forEach(s=>{if(s.folderId===f.id){s.folderId=null;saveNow(s,false)}});S.fv=undefined};
+menu([{l:'Eliminar solo la carpeta',s:n.length?'las canciones se conservan':'',fn:()=>{rm();render();toast('Carpeta eliminada.')}},n.length?{l:`Eliminar carpeta y ${n.length} canciones`,danger:true,fn:()=>confirmD('¿Eliminar también las canciones?','Irán a la papelera y podrás recuperarlas desde Ajustes.','Eliminar todo',()=>{n.forEach(s=>{s.deletedAt=Date.now();saveNow(s,false)});rm();render()},true)}:null],'Eliminar «'+f.name+'»')}
+
+/* ===== H. Búsqueda y listas ===== */
+const preview=s=>textOf(s).replace(/\s*\n+\s*/g,' / ').replace(/^\W+/,'').slice(0,120)||'Empieza a escribir tu letra…';
+function matchSong(s){if(S.status&&s.status!==S.status)return false;if(S.tag&&!s.tags.includes(S.tag))return false;const q=norm(S.q.trim());if(!q)return true;return norm([s.title,textOf(s),s.notes,s.tags.join(' '),fname(s.folderId)].join('\n')).includes(q)}
+function sorter(){const k=P.sort,a=(x,y)=>norm(x.title).localeCompare(norm(y.title),'es');return k==='alpha'?a:k==='created'?(x,y)=>y.createdAt-x.createdAt:k==='favs'?(x,y)=>(y.isFavorite-x.isFavorite)||(y.updatedAt-x.updatedAt):(x,y)=>y.updatedAt-x.updatedAt}
+function songRow(s){return h('div',{class:'row'},h('button',{type:'button',class:'main',onclick:()=>openSong(s.id)},h('span',{class:'t'},s.title||'Sin título'),h('span',{class:'p'},preview(s)),h('span',{class:'m'},fmt(s.updatedAt),h('span',{},ST[s.status]),s.folderId?h('span',{},fname(s.folderId)):null,s.isFavorite?h('span',{role:'img','aria-label':'Favorita'},ico('star')):null)),btn('Acciones de '+(s.title||'canción'),'more',()=>songMenu(s)))}
+function head(title,sub,back,...acts){return h('header',{class:'top'},h('div',{class:'bar'},back?btn('Volver','back',back):h('span',{class:'brand'},CFG.name),h('span',{class:'sp'}),...acts),h('h1',{},title),sub?h('p',{class:'sub'},sub):null)}
+function listScreen(c){const box=h('div',{class:'list'});
+const inp=h('input',{type:'search',class:'q','aria-label':'Buscar',placeholder:'Buscar título, letra, nota o etiqueta',autocomplete:'off',autocapitalize:'off',enterkeyhint:'search'});inp.value=S.q;
+const sbar=h('div',{class:'sbar',hidden:!S.sOpen&&!S.q},inp,btn('Limpiar búsqueda','x',()=>{S.q='';inp.value='';fill();inp.focus()}));
+inp.addEventListener('input',()=>{S.q=inp.value;fill()});
+const fill=()=>{const all=c.base(),it=all.filter(matchSong).sort(sorter());box.replaceChildren(...(all.length?(it.length?it.map(songRow):[h('p',{class:'none'},'Sin coincidencias.')]):[c.empty()]))};
+const tags=[...new Set(live().flatMap(s=>s.tags))].sort((a,b)=>a.localeCompare(b,'es'));
+const fs=h('select',{'aria-label':'Filtrar por estado',onchange:e=>{S.status=e.target.value;fill()}},h('option',{value:''},'Todos los estados'),Object.keys(ST).map(k=>h('option',{value:k},ST[k])));fs.value=S.status;
+const ft=tags.length?h('select',{'aria-label':'Filtrar por etiqueta',onchange:e=>{S.tag=e.target.value;fill()}},h('option',{value:''},'Todas las etiquetas'),tags.map(t=>h('option',{value:t},t))):null;if(ft)ft.value=S.tag;
+const w=h('div',{},head(c.title,c.sub,c.back,btn('Buscar','search',()=>{sbar.hidden=!sbar.hidden;if(!sbar.hidden)inp.focus();else{S.q='';inp.value='';fill()}}),btn('Ordenar','sort',()=>menu(SORTS.map(([k,l])=>({l,check:P.sort===k,fn:()=>{P.sort=k;savePrefs();fill()}})),'Ordenar por')),c.more?btn('Opciones de carpeta','more',c.more):null,c.add?btn('Nueva canción','plus',c.add,'pri'):null),
+db?null:h('div',{class:'ban',role:'alert'},'El almacenamiento no está disponible (¿navegación privada?). Lo que escribas no se conservará al cerrar.'),sbar,c.base().length?h('div',{class:'filters'},fs,ft):null,box);fill();return w}
+const emptyLib=fid=>()=>h('div',{class:'empty'},h('p',{class:'ph'},fid?'Esta carpeta está vacía.':'Las canciones empiezan en alguna parte.'),h('button',{type:'button',class:'pb',onclick:()=>createSong(fid)},'Escribir una canción'));
+const emptyMsg=t=>()=>h('p',{class:'none'},t);
+
+/* ===== L. Navegación y pantallas ===== */
+const TABS=[['songs','Canciones','note'],['folders','Carpetas','folder'],['favs','Favoritas','star'],['drafts','Borradores','pencil'],['settings','Ajustes','sliders']];
+function tabView(){const t=S.tab,n=live().length;
+if(t==='songs')return listScreen({title:'Tus canciones',sub:n?n+(n===1?' canción':' canciones'):'',base:live,empty:emptyLib(),add:()=>createSong()});
+if(t==='favs')return listScreen({title:'Favoritas',base:()=>live().filter(s=>s.isFavorite),empty:emptyMsg('Aún no hay favoritas. Toca la estrella dentro de una canción.')});
+if(t==='drafts')return listScreen({title:'Borradores',base:()=>live().filter(s=>s.status==='draft'),empty:emptyMsg('No hay borradores.')});
+if(t==='folders')return foldersView();return settingsView()}
+function foldersView(){if(S.fv!==undefined){const f=S.folders.find(x=>x.id===S.fv);if(S.fv==='none')return listScreen({title:'Sin carpeta',back:()=>{S.fv=undefined;render()},base:()=>live().filter(s=>!s.folderId),empty:emptyMsg('Todas tus canciones están en carpetas.')});if(f)return listScreen({title:f.name,back:()=>{S.fv=undefined;render()},base:()=>live().filter(s=>s.folderId===f.id),empty:emptyLib(f.id),more:()=>folderMenu(f),add:()=>createSong(f.id)});S.fv=undefined}
+const cnt=id=>live().filter(s=>id==='none'?!s.folderId:s.folderId===id).length;
+const row=(id,name,color,f)=>h('div',{class:'row'},h('button',{type:'button',class:'main',onclick:()=>{S.fv=id;S.q='';render()}},h('span',{class:'t'},color?h('i',{class:'dot',style:'background:'+color}):null,name),h('span',{class:'m'},cnt(id)+(cnt(id)===1?' canción':' canciones'))),f?btn('Opciones de '+name,'more',()=>folderMenu(f)):h('span',{style:'width:20px'}));
+return h('div',{},head('Carpetas',null,null,btn('Nueva carpeta','plus',()=>newFolder(),'pri')),h('div',{class:'list'},row('none','Sin carpeta',null),S.folders.slice().sort((a,b)=>a.name.localeCompare(b.name,'es')).map(f=>row(f.id,f.name,f.color,f)),S.folders.length?null:h('p',{class:'hint'},'Crea carpetas para agrupar tus canciones, por ejemplo por álbum o proyecto.')))}
+function settingsView(){if(S.sub==='trash')return trashView();
+const line=(l,c)=>h('div',{class:'line'},h('span',{},l),c),lk=(l,fn,cls='')=>h('div',{class:'line'},h('button',{type:'button',class:'lk '+cls,onclick:fn},l)),R=()=>{render()};
+const sel=h('select',{'aria-label':'Orden predeterminado',onchange:e=>{P.sort=e.target.value;savePrefs()}},SORTS.map(([k,l])=>h('option',{value:k},l)));sel.value=P.sort;
+const tr=S.songs.filter(s=>s.deletedAt).length;
+return h('div',{},head('Ajustes'),h('div',{class:'set'},
+h('h2',{},'Apariencia'),seg([['auto','Automático'],['light','Claro'],['dark','Oscuro']],P.theme,v=>{P.theme=v;savePrefs();applyTheme();R()}),h('p',{},'Tamaño del texto del editor'),seg([['s','Pequeño'],['m','Normal'],['l','Grande']],P.size,v=>{P.size=v;savePrefs();applyTheme();R()}),
+h('h2',{},'Escritura'),h('p',{},'Modo para canciones nuevas'),seg([['free','Texto libre'],['sections','Por secciones']],P.mode,v=>{P.mode=v;savePrefs();R()}),line('Orden de la biblioteca',sel),
+h('h2',{},'Copia de seguridad'),lk('Exportar todas las canciones (JSON)',exportAll),lk('Importar copia de seguridad…',importFile),lk('Papelera'+(tr?' ('+tr+')':''),()=>{S.sub='trash';R()}),
+h('h2',{},'Almacenamiento'),h('p',{},db?'Todo se guarda solo en este dispositivo, dentro de Safari (IndexedDB). No hay cuenta ni sincronización entre dispositivos.':'El almacenamiento local no está disponible: nada se conservará al cerrar.'),h('p',{},'Los datos pueden perderse si borras los datos del sitio o de Safari, si se desinstala la app de la pantalla de inicio o si falla el dispositivo. Exporta copias con regularidad.'+(persisted===true?' Safari ha concedido almacenamiento persistente.':'')),
+h('h2',{},'Datos'),lk('Borrar todos los datos…',clearAll,'dg'),h('p',{},CFG.name+' · versión '+CFG.version)))}
+function trashView(){const L=S.songs.filter(s=>s.deletedAt).sort((a,b)=>b.deletedAt-a.deletedAt);
+return h('div',{},head('Papelera','Las canciones eliminadas se conservan hasta que las borres aquí.',()=>{S.sub=null;render()}),h('div',{class:'list'},L.length?L.map(s=>h('div',{class:'row'},h('div',{class:'main'},h('span',{class:'t'},s.title),h('span',{class:'m'},'Eliminada '+fmt(s.deletedAt))),btn('Restaurar','undo',()=>{s.deletedAt=null;saveNow(s,false);render()}),btn('Eliminar definitivamente','trash',()=>confirmD('¿Borrar para siempre?',`«${s.title}» no se podrá recuperar.`,'Borrar',()=>{S.songs=S.songs.filter(x=>x!==s);remove('songs',s.id);remove('history',s.id);delete H[s.id];render()},true)))):h('p',{class:'none'},'La papelera está vacía.')))}
+function clearAll(){confirmD('¿Borrar todos los datos?','Se eliminarán todas las canciones, carpetas, notas, historial y papelera de este dispositivo. Los ajustes visuales se conservan. No se puede deshacer; exporta antes una copia si quieres conservarla.','Continuar',()=>confirmD('Última confirmación','Esta acción borra todo de forma permanente.','Borrar todo',async()=>{pend.forEach(clearTimeout);pend.clear();S.songs=[];S.folders=[];for(const k in H)delete H[k];['songs','folders','history'].forEach(st=>op(()=>dbW(st,o=>o.clear())));await chain;S.fv=undefined;S.sub=null;render();toast(failed?'No se pudo borrar todo.':'Datos borrados.')},true),true)}
+
+/* ===== E/F. Editor y secciones ===== */
+function openSong(id,fresh){S.st=$('#view').scrollTop;S.open=id;S.ed='lyrics';history.pushState({o:1},'');render();if(fresh){const t=$('.ti');t?.focus();t?.select()}}
+function closeEditor(){const s=byId(S.open);flushAll();if(s)snap(s,true);S.open=null;render();$('#view').scrollTop=S.st}
+addEventListener('popstate',()=>{if(S.open)closeEditor()});
+function ins(ta,t){ta.focus();if(!document.execCommand('insertText',false,t)){ta.setRangeText(t,ta.selectionStart,ta.selectionEnd,'end');ta.dispatchEvent(new Event('input'))}}
+function switchMode(s,m,redraw){if(s.mode===m)return;const go=()=>{snap(s,true);if(m==='sections'){if(!s.sections.length&&s.lyrics.trim())s.sections=[{id:uid(),name:'Verso 1',text:s.lyrics}]}else if(s.sections.length)s.lyrics=textOf({mode:'sections',sections:s.sections});s.mode=m;saveNow(s);redraw()};
+if(m==='sections'&&!s.sections.length&&s.lyrics.trim())confirmD('¿Pasar a secciones?','Tu letra se copiará a una sección llamada «Verso 1». Podrás renombrarla y dividirla. Se guarda una versión en el historial.','Cambiar',go);
+else if(m==='free'&&s.sections.length&&s.sections.some(x=>x.text.trim()))confirmD('¿Pasar a texto libre?','Las secciones se unirán en un solo texto con su nombre entre corchetes. La versión actual queda en el historial.','Cambiar',go);else go()}
+function lyricsPane(s,redraw){const free=s.mode!=='sections',p=h('div',{class:'pane'});let last=null;
+const ms=seg([['free','Texto libre'],['sections','Por secciones']],free?'free':'sections',m=>switchMode(s,m,redraw));
+const cur=()=>{const a=document.activeElement;return a&&a.tagName==='TEXTAREA'?a:last};
+const tb=(l,i,fn)=>btn(l,i,fn);
+const tools=h('div',{class:'tb',role:'toolbar','aria-label':'Herramientas de composición',onpointerdown:e=>{if(e.target.closest('button'))e.preventDefault()}},
+tb('Deshacer','undo',()=>{cur()?.focus();document.execCommand('undo')}),tb('Rehacer','redo',()=>{cur()?.focus();document.execCommand('redo')}),
+free?tb('Insertar salto de línea','nl',()=>ins(cur(),'\n')):null,
+free?tb('Insertar etiqueta de sección','hash',()=>{const t=cur();menu(PRESETS.map(n=>({l:n,fn:()=>{const b=t.value.slice(0,t.selectionStart);ins(t,(!b||b.endsWith('\n')?'':'\n')+'['+n+']\n')}})),'Insertar etiqueta')}):null,
+free?tb('Duplicar línea','dup',()=>{const t=cur();if(!t||!t._f)return toast('Toca primero la línea que quieres duplicar.');const v=t.value,a=t.selectionStart,e=t.selectionEnd,ls=v.lastIndexOf('\n',a-1)+1;let le=v.indexOf('\n',e);if(le<0)le=v.length;const line=v.slice(ls,le);t.setSelectionRange(le,le);ins(t,'\n'+line)}):null,
+tb('Copiar letra','copy',async()=>toast(await copyText(textOf(s))?'Letra copiada.':'No se pudo copiar.')),tb('Compartir letra','share',()=>shareSong(s,false)));
+p.addEventListener('focusin',e=>{if(e.target.tagName==='TEXTAREA'){last=e.target;e.target._f=1}});
+if(free){const ta=h('textarea',{class:'lyr','aria-label':'Letra',placeholder:'Empieza a escribir tu letra…',autocapitalize:'sentences'});ta.value=s.lyrics;ta.oninput=()=>{s.lyrics=ta.value;save(s)};last=ta;p.append(ms,tools,ta);return p}
+const sc=h('div',{class:'scr'});
+const draw=()=>{const y=sc.scrollTop;sc.replaceChildren(...s.sections.map(block),h('button',{type:'button',class:'add',onclick:()=>menu([...PRESETS.map(n=>({l:n,fn:()=>add(n)})),{l:'Sección personalizada…',fn:()=>ask('Nombre de la sección','','Añadir',add)}],'Añadir sección')},'+ Añadir sección'));sc.scrollTop=y};
+const add=n=>{s.sections.push({id:uid(),name:n,text:''});saveNow(s);draw();const a=sc.querySelectorAll('textarea');a[a.length-1]?.focus();sc.scrollTop=sc.scrollHeight};
+const mv=(i,d)=>{const j=i+d;if(j<0||j>=s.sections.length)return;[s.sections[i],s.sections[j]]=[s.sections[j],s.sections[i]];save(s);draw()};
+const dupS=i=>{const c={...s.sections[i],id:uid(),name:s.sections[i].name+' (copia)'};s.sections.splice(i+1,0,c);save(s);draw()};
+const delS=i=>{const x=s.sections[i],go=()=>{s.sections.splice(i,1);save(s);draw()};x.text.trim()?confirmD('¿Eliminar la sección?',`«${x.name}» y su texto se quitarán de la canción.`,'Eliminar',go,true):go()};
+function block(x,i){const nm=h('input',{class:'sn',type:'text','aria-label':'Nombre de la sección',autocomplete:'off'});nm.value=x.name;nm.oninput=()=>{x.name=nm.value;save(s)};
+const ta=h('textarea',{class:'st','aria-label':'Texto de '+x.name,placeholder:'Escribe esta sección…',rows:3});ta.value=x.text;const fit=()=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px'};ta.oninput=()=>{x.text=ta.value;save(s);fit()};requestAnimationFrame(fit);
+return h('section',{class:'sec'},h('div',{class:'sh'},nm,btn('Subir sección','up',()=>mv(i,-1)),btn('Bajar sección','down',()=>mv(i,1)),btn('Duplicar sección','dup',()=>dupS(i)),btn('Eliminar sección','trash',()=>delS(i))),ta)}
+p.append(ms,tools,sc);draw();return p}
+function notesPane(s){const nt=h('textarea',{'aria-label':'Notas de composición',placeholder:'Ideas, referencias, cambios pendientes…'});nt.value=s.notes;nt.oninput=()=>{s.notes=nt.value;save(s)};
+const st=h('select',{'aria-label':'Estado',onchange:e=>{s.status=e.target.value;saveNow(s,false)}},Object.keys(ST).map(k=>h('option',{value:k},ST[k])));st.value=s.status;
+const fo=h('select',{'aria-label':'Carpeta',onchange:e=>{s.folderId=e.target.value||null;saveNow(s,false)}},h('option',{value:''},'Sin carpeta'),S.folders.map(f=>h('option',{value:f.id},f.name)));fo.value=s.folderId||'';
+const tg=h('input',{type:'text','aria-label':'Etiquetas separadas por comas',placeholder:'triste, acústica…',autocomplete:'off',autocapitalize:'off'});tg.value=s.tags.join(', ');tg.oninput=()=>{s.tags=[...new Set(tg.value.split(',').map(x=>x.trim().slice(0,40)).filter(Boolean))];save(s,false)};
+return h('div',{class:'scr'},h('div',{class:'nt'},h('label',{},'Notas (no se mezclan con la letra)'),nt,h('label',{},'Estado'),st,h('label',{},'Carpeta'),fo,h('label',{},'Etiquetas'),tg,h('button',{type:'button',class:'sec2',onclick:()=>history_(s)},'Historial de versiones')))}
+function editorView(s){const ti=h('input',{class:'ti',type:'text',placeholder:'Sin título','aria-label':'Título de la canción',enterkeyhint:'done',autocomplete:'off'});ti.value=s.title;
+ti.oninput=()=>{s.title=ti.value;save(s)};ti.onblur=()=>{if(!ti.value.trim()){ti.value=s.title='Sin título';save(s)}};ti.onkeydown=e=>{if(e.key==='Enter')ti.blur()};
+const fav=btn('Favorita','star',()=>{s.isFavorite=!s.isFavorite;saveNow(s,false);up()},s.isFavorite?'on':'');fav.setAttribute('aria-pressed',String(s.isFavorite));
+const up=()=>{fav.classList.toggle('on',s.isFavorite);fav.setAttribute('aria-pressed',String(s.isFavorite))};
+const body=h('div',{class:'edb'}),tabs=h('div',{class:'tabs'});
+const draw=()=>{tabs.replaceChildren(seg([['lyrics','Letra'],['notes','Notas y detalles']],S.ed,v=>{S.ed=v;draw()}));body.replaceChildren(S.ed==='notes'?notesPane(s):lyricsPane(s,draw))};draw();
+return h('div',{class:'ed'},h('div',{class:'eh'},btn('Volver a la biblioteca','back',()=>history.back()),ti,h('span',{id:'sv','aria-live':'polite'},'Guardado'),fav,btn('Más acciones','more',()=>songMenu(s))),tabs,body)}
+
+/* ===== Render, teclado e inicio ===== */
+function render(){const app=$('#app'),v=$('#view'),s=S.open&&byId(S.open);if(S.open&&!s)S.open=null;app.classList.toggle('editing',!!S.open);v.replaceChildren(S.open?editorView(s):tabView());
+$('#nav').replaceChildren(...TABS.map(([k,l,i])=>h('button',{type:'button','aria-current':S.tab===k?'page':null,onclick:()=>{if(S.tab!==k||S.fv!==undefined||S.sub){S.tab=k;S.fv=undefined;S.sub=null;S.q='';S.tag='';S.status='';S.sOpen=false;render();$('#view').scrollTop=0}}},ico(i),l)));showStatus()}
+const vv=window.visualViewport;function fit(){const r=document.documentElement.style;r.setProperty('--vh',(vv?vv.height:innerHeight)+'px');r.setProperty('--vt',(vv?vv.offsetTop:0)+'px')}
+if(vv){vv.addEventListener('resize',fit);vv.addEventListener('scroll',fit)}addEventListener('resize',fit);fit();
+addEventListener('error',()=>toast('Ocurrió un error inesperado.'));
+(async()=>{applyTheme();try{db=await openDB();const[a,b]=await Promise.all([dbAll('songs'),dbAll('folders')]);S.songs=a.map(cleanSong).filter(Boolean);S.folders=b.map(cleanFolder).filter(Boolean);navigator.storage&&navigator.storage.persist&&navigator.storage.persist().then(r=>persisted=r).catch(()=>{})}catch(e){db=null}render()})();
+})();
+</script>
+</body>
+</html>
