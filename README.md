@@ -14,5 +14,5 @@ App web para escribir canciones en iPhone. Un solo archivo (`index.html`), sin c
 
 ## Cómo usarla
 
-1. Abre la página en Safari desde tu iPhone.
+1. Abre la página en Safari desde tu iPhone. ( https://maf0x.github.io/LYRIC/ )
 2. Opcional: Compartir → Añadir a pantalla de inicio.
